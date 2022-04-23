@@ -1,4 +1,4 @@
-p[[package]]
+[[package]]
 name = "argparse"
 version = "1.4.0"
 description = "Python command-line parsing library"
