@@ -2,7 +2,9 @@ import re
 from urllib.parse import urlparse
 
 
-def transform_url_to_file_name(url):
+def transform_url_to_file_name(url: str) -> str:
+    """Transforms url to file name
+    https://ru.hexlet.io/courses -> ru-hexlet-io-courses.html"""
     parsed_url = urlparse(url)
     if len(parsed_url.path.split('.')) == 2:
         parsed_url = parsed_url._replace(

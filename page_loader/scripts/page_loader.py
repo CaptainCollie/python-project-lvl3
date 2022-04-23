@@ -7,9 +7,10 @@ from page_loader.utils import transform_url_to_file_name
 
 
 def download(url, path):
+    """Download html page located on url and save it to path/url.html"""
     path_to_dir = Path(path)
     if not path_to_dir.exists():
-        raise ValueError(f'Path {path} do not exist')
+        raise FileExistsError(f'Path {path} do not exist')
 
     response = requests.get(url)
     if not response.status_code == 200:
