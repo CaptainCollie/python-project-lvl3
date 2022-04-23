@@ -6,6 +6,9 @@ from page_loader.parse_args import parse_args
 from page_loader.utils import transform_url_to_file_name
 
 
+__all__ = ['download']
+
+
 def download(url, path):
     """Download html page located on url and save it to path/url.html"""
     path_to_dir = Path(path)
