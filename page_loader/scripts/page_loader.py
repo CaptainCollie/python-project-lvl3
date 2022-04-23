@@ -13,7 +13,7 @@ def download(url, path):
     """Download html page located on url and save it to path/url.html"""
     path_to_dir = Path(path)
     if not path_to_dir.exists():
-        raise FileExistsError(f'Path {path} do not exist')
+        raise IOError(f'Path {path} does not exist')
 
     response = requests.get(url)
     if not response.status_code == 200:
