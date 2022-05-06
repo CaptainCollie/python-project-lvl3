@@ -1,5 +1,4 @@
 #! usr/env/python
-import os
 import sys
 from pathlib import Path
 from typing import Union
@@ -9,7 +8,7 @@ import requests
 
 from page_loader.html import replace_links_to_paths
 from page_loader.parse_args import parse_args
-from page_loader.utils import transform_url_to_file_name
+from page_loader.utils import transform_url_to_file_name, create_dir
 
 __all__ = ['download']
 
@@ -33,10 +32,8 @@ def download(url: str, path: Union[str, Path]) -> str:
     files_dir_name = transform_url_to_file_name(url, '_files', True)
     path_to_files = path_to_dir.joinpath(files_dir_name)
 
-    try:
-        os.mkdir(path_to_files)
-    except FileExistsError:
-        print('Directory exists.')
+    create_dir(path_to_files)
+
     html = response.text
 
     parsed_url = urlparse(url)

@@ -9,7 +9,7 @@ from page_loader.utils import transform_url_to_file_name
 
 
 def replace_links_to_paths(html: str, path_to_files: Path,
-                           base_url: str) -> str:
+                           url: str) -> str:
     soup = BeautifulSoup(html, 'lxml')
     for tag, attr, resp_attr, ext in (
             ('img', 'src', 'content', 'png'),
@@ -17,7 +17,7 @@ def replace_links_to_paths(html: str, path_to_files: Path,
             ('script', 'src', 'text', '')):
         sources = soup.find_all(tag)
         if sources:
-            html = download_sources(sources, path_to_files, base_url, html,
+            html = download_sources(sources, path_to_files, url, html,
                                     attr, resp_attr, ext)
     return html
 

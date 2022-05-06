@@ -12,5 +12,5 @@ Work Example
 [![asciicast](https://asciinema.org/a/Ufbx0cbu6R49oBUsq8LUrtRu5.svg)](https://asciinema.org/a/Ufbx0cbu6R49oBUsq8LUrtRu5)
 
 
-Download images
-[![asciicast](https://asciinema.org/a/zIB3yxowIrGbstukTdcvYWm2F.svg)](https://asciinema.org/a/zIB3yxowIrGbstukTdcvYWm2F)
+Download resources
+[![asciicast](https://asciinema.org/a/fNdJqeq4S1Toeh09JpIqSe64n.svg)](https://asciinema.org/a/fNdJqeq4S1Toeh09JpIqSe64n)

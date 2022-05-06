@@ -1,3 +1,4 @@
+import os
 import re
 
 from urllib.parse import urlparse
@@ -27,3 +28,10 @@ def transform_url_to_file_name(url: str, postfix: str = '',
     prepared_ulr = re.sub(rf'{parsed_url.scheme}://', '', parsed_url.geturl())
     file_name = re.sub(r'[^\w\d]', '-', prepared_ulr) + postfix
     return file_name
+
+
+def create_dir(dir_path):
+    try:
+        os.mkdir(dir_path)
+    except FileExistsError:
+        print('Directory exists.')
