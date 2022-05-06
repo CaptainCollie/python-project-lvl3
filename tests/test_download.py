@@ -1,8 +1,9 @@
-import requests_mock
+import os
+from pathlib import Path
 
 import pytest
+import requests_mock
 
-from pathlib import Path
 from page_loader.scripts.page_loader import download
 
 cwd = Path(__file__).parent
@@ -47,3 +48,28 @@ def test_download_connection_error(tmpdir):
                            match=f'Connection to {url} failed'):
             path = cwd.joinpath(tmpdir)
             download(url, path)
+
+
+def test_download_page_with_images(tmpdir):
+    with requests_mock.Mocker() as m:
+        url = 'http://test.com'
+        image_url = 'http://test.com/page-loader-hexlet-repl-co_files/' \
+                    'page-loader-hexlet-repl-co-assets-professions-nodejs.png'
+        with open('tests/fixtures/test_page.html', 'r') as f:
+            text = f.read()
+        with open(
+                'tests/fixtures/'
+                'page-loader-hexlet-repl-co-assets-professions-nodejs.png',
+                'rb') as f:
+            image = f.read()
+        m.get(url=url, text=text)
+        m.get(url=image_url, content=image)
+        path = cwd.joinpath(tmpdir)
+        file_name = download('http://test.com', path)
+        assert str(file_name) == f'{tmpdir}/test-com.html'
+        path_to_html_file = path.joinpath(file_name)
+        assert path_to_html_file.exists()
+        path_to_files_dir = path.joinpath(
+            'test-com_files')
+        assert path_to_files_dir.exists()
+        assert len(os.listdir(path_to_files_dir)) != 0
