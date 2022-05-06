@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 from typing import List
 from urllib.parse import urljoin
@@ -6,6 +5,7 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 
+from page_loader.logger import logger_
 from page_loader.utils import transform_url_to_file_name
 
 
@@ -43,16 +43,16 @@ def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
         path_to_src = full_path_to_files.joinpath(path_to_src)
         html = html.replace(base_src_url, '/'.join(path_to_src.parts[1:]))
 
-        logging.info(f'Request to {src_url}')
+        logger_.info(f'Request to {src_url}')
         src_response = requests.get(src_url)
-        logging.info(f'Response status {src_response.status_code}')
+        logger_.info(f'Response status {src_response.status_code}')
         mode = ''
         file_txt = src_response.__getattribute__(response_attr)
         if isinstance(file_txt, bytes):
             mode = 'wb'
         elif isinstance(file_txt, str):
             mode = 'w'
-        logging.info(f'Writing in file {path_to_src}')
+        logger_.info(f'Writing in file {path_to_src}')
         with open(path_to_src, mode) as f:
             f.write(file_txt)
         print('OK', src_url)

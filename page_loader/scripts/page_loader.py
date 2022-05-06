@@ -1,5 +1,4 @@
 #! usr/env/python
-import logging
 import sys
 from pathlib import Path
 from typing import Union
@@ -7,6 +6,7 @@ from urllib.parse import urlparse
 
 import requests
 
+from page_loader.logger import logger_
 from page_loader.html import replace_links_to_paths
 from page_loader.parse_args import parse_args
 from page_loader.utils import transform_url_to_file_name, create_dir
@@ -18,15 +18,15 @@ def download(url: str, path: Union[str, Path]) -> str:
     """Download html page located on url and save it to path/url.html"""
     path_to_dir = Path(path)
     if not path_to_dir.exists():
-        logging.error(f'Path {path} does not exist')
+        logger_.error(f'Path {path} does not exist')
         raise IOError(f'Path {path} does not exist')
 
-    logging.info(f'Request to {url}')
+    logger_.info(f'Request to {url}')
     response = requests.get(url)
-    logging.info(f'Response status {response.status_code}')
+    logger_.info(f'Response status {response.status_code}')
     if not response.status_code == 200:
-        logging.error(f'Connection to {url} failed\n'
-                      f'{response.status_code}')
+        logger_.error(f'Connection to {url} failed\n'
+                     f'{response.status_code}')
         raise ConnectionError(
             f'Connection to {url} failed\n'
             f'{response.status_code}'
@@ -46,7 +46,7 @@ def download(url: str, path: Union[str, Path]) -> str:
     base_url = f'{parsed_url.scheme}://{parsed_url.netloc}'
     html = replace_links_to_paths(html, path_to_files, base_url)
 
-    logging.info(f'Writing in file {path_to_html}')
+    logger_.info(f'Writing in file {path_to_html}')
     with open(path_to_html, 'w', encoding='utf-8') as f:
         f.write(html)
     return str(path_to_html.absolute())

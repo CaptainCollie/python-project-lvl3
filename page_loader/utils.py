@@ -1,8 +1,8 @@
-import logging
 import os
 import re
-
 from urllib.parse import urlparse
+
+from page_loader.logger import logger_
 
 
 def transform_url_to_file_name(url: str, postfix: str = '',
@@ -35,4 +35,4 @@ def create_dir(dir_path):
     try:
         os.mkdir(dir_path)
     except FileExistsError:
-        logging.warning(f'Directory exists: {dir_path}')
+        logger_.warning(f'Directory exists: {dir_path}')

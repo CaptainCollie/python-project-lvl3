@@ -22,6 +22,7 @@ coverage = "^6.3.2"
 pytest-cov = "^3.0.0"
 pytest-xdist = "^2.5.0"
 asciinema = "^2.1.0"
+loguru = "^0.6.0"
 
 [tool.poetry.scripts]
 page-loader = "page_loader.scripts.page_loader:main"
