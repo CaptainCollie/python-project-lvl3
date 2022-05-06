@@ -14,7 +14,7 @@ lint:
 	poetry run flake8 page_loader
 
 test:
-	poetry run pytest tests/test_download.py tests/test_parse_args.py
+	poetry run pytest tests/test_download.py tests/test_parse_args.py --show-capture=no
 
 test-coverage:
 	poetry run pytest --cov=page_loader --cov-report xml

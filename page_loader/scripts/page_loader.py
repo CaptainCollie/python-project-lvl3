@@ -1,4 +1,5 @@
 #! usr/env/python
+import logging
 import sys
 from pathlib import Path
 from typing import Union
@@ -17,10 +18,15 @@ def download(url: str, path: Union[str, Path]) -> str:
     """Download html page located on url and save it to path/url.html"""
     path_to_dir = Path(path)
     if not path_to_dir.exists():
+        logging.error(f'Path {path} does not exist')
         raise IOError(f'Path {path} does not exist')
 
+    logging.info(f'Request to {url}')
     response = requests.get(url)
+    logging.info(f'Response status {response.status_code}')
     if not response.status_code == 200:
+        logging.error(f'Connection to {url} failed\n'
+                      f'{response.status_code}')
         raise ConnectionError(
             f'Connection to {url} failed\n'
             f'{response.status_code}'
@@ -40,6 +46,7 @@ def download(url: str, path: Union[str, Path]) -> str:
     base_url = f'{parsed_url.scheme}://{parsed_url.netloc}'
     html = replace_links_to_paths(html, path_to_files, base_url)
 
+    logging.info(f'Writing in file {path_to_html}')
     with open(path_to_html, 'w', encoding='utf-8') as f:
         f.write(html)
     return str(path_to_html.absolute())

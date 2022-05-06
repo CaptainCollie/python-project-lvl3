@@ -1,4 +1,5 @@
 import argparse
+import logging
 
 
 def parse_args(args):
@@ -17,4 +18,5 @@ def parse_args(args):
                         action='help')
     parser._optionals.title = 'Options'
     args = parser.parse_args(args)
+    logging.info(f'Args: {args}')
     return args

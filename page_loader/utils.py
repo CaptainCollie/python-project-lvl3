@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 
@@ -34,4 +35,4 @@ def create_dir(dir_path):
     try:
         os.mkdir(dir_path)
     except FileExistsError:
-        print('Directory exists.')
+        logging.warning(f'Directory exists: {dir_path}')
