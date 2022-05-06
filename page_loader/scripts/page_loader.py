@@ -1,5 +1,6 @@
 #! usr/env/python
 import os
+import sys
 from pathlib import Path
 from typing import List
 from urllib.parse import urlparse
@@ -51,7 +52,7 @@ def download(url, path):
 
 
 def main():
-    args = parse_args()
+    args = parse_args(sys.argv[1:])
     file_path = download(args.url, args.output)
     print(file_path)
 

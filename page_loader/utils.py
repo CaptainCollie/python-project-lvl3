@@ -35,9 +35,8 @@ def download_images(images: List[BeautifulSoup], full_path_to_files: Path,
         path_to_image = transform_url_to_file_name(image_url, '.png')
         path_to_image = full_path_to_files.joinpath(path_to_image)
         html = html.replace(base_image_url, '/'.join(path_to_image.parts[1:]))
-        print('here')
+
         image_response = requests.get(image_url)
-        print('here1')
         with open(path_to_image, 'wb') as f:
             f.write(image_response.content)
         print('OK', image_url)

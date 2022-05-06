@@ -1,7 +1,7 @@
 import argparse
 
 
-def parse_args():
+def parse_args(args):
     parser = argparse.ArgumentParser(
         add_help=False,
         usage="Usage page-loader [options] <url>",
@@ -16,5 +16,5 @@ def parse_args():
     parser.add_argument('-h', '--help', help='display help for command',
                         action='help')
     parser._optionals.title = 'Options'
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     return args
