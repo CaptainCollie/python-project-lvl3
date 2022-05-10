@@ -95,7 +95,7 @@ def test_download_permission_error(tmpdir):
             url = 'http://test.com'
             m.get(url=url, text='Hello, World!')
             download(url, path)
-
+        os.chmod(path, 777)
 
 def test_download_page_with_sources(tmpdir, text, image, css, html_text,
                                     js):
