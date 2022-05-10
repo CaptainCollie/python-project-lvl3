@@ -15,6 +15,5 @@ def choose_mode(file_txt: Union[str, bytes]) -> str:
 def write(path: Union[Path, str], data: Union[str, bytes]) -> None:
     mode = choose_mode(data)
     logger_.info(f'Writing in file {path}')
-    encoding_dict = {'encoding': 'utf-8'} if mode == 'w' else {}
-    with open(path, mode, **encoding_dict) as f:
+    with open(path, mode) as f:
         f.write(data)
