@@ -54,18 +54,9 @@ def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
 
         src_response = get_response(src_url)
         file_txt = src_response.__getattribute__(response_attr)
-        file_txt = to_str(file_txt)
 
         write(path_to_src, file_txt)
         bar.next()
         bar.finish()
 
     return html
-
-
-def to_str(data):
-    if isinstance(data, bytes):
-        data = data.decode('utf-8', 'ignore')
-
-    data.replace('\xef\xbb\xbf', '')
-    return data
