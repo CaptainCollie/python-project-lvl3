@@ -1,14 +1,10 @@
-import time
 from pathlib import Path
 from typing import List
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
-from progress.bar import Bar, ChargingBar
-from progress.counter import Stack
-from progress.spinner import Spinner
+from progress.bar import ChargingBar
 
-from page_loader.progress_bar import ProgressBar
 from page_loader.utils import transform_url_to_file_name, get_response, \
     write_to_file
 
