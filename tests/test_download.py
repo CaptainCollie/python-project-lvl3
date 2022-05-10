@@ -19,7 +19,7 @@ def text():
 def image():
     with open(
             'tests/fixtures/'
-            'page-loader-hexlet-repl-co-assets-professions-nodejs.png',
+            'page-loader-hexlet-repl-co-assets-professions-nodejs.jpg',
             'rb') as f:
         return f.read()
 
@@ -121,7 +121,7 @@ def test_download_page_with_sources(tmpdir, text, image, css, html_text,
         dir_list = os.listdir(path_to_files_dir)
         assert len(dir_list) == 4
         path_to_image = path_to_files_dir.joinpath(
-            'test-com-assets-professions-nodejs.png')
+            'test-com-assets-professions-nodejs.jpg')
         path_to_css = path_to_files_dir.joinpath(
             'test-com-assets-application.css')
         path_to_html_text = path_to_files_dir.joinpath(
