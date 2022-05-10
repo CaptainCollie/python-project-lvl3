@@ -207,7 +207,7 @@ testing = ["pytest", "pytest-benchmark"]
 name = "progress"
 version = "1.6"
 description = "Easy to use progress bars"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -397,7 +397,7 @@ dev = ["pytest (>=4.6.2)", "black (>=19.3b0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "d257dec09145129feae24850e9210cdfc47e749a882bef080b8cb7009fa20938"
+content-hash = "8b100c1e12801221581693e16ca439f7bae00714d176aeecd7c0f8c9d7243d95"
 
 [metadata.files]
 argparse = [
