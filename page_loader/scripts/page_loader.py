@@ -37,9 +37,7 @@ def download(url: str, path: Union[str, Path]) -> Optional[str]:
 
     html = response.text
 
-    parsed_url = urlparse(url)
-    base_url = f'{parsed_url.scheme}://{parsed_url.netloc}'
-    html = replace_links_to_paths(html, path_to_files, base_url)
+    html = replace_links_to_paths(html, path_to_files, url)
 
     write_to_file(path_to_html, html)
     return str(path_to_html.absolute())
