@@ -13,6 +13,7 @@ def replace_links_to_paths(html: str, path_to_files: Path,
                            url: str) -> str:
     parsed_url = urlparse(url)
     base_url = f'{parsed_url.scheme}://{parsed_url.netloc}'
+    html = html.replace('\xef\xbb\xbf', '')
     soup = BeautifulSoup(html, 'html.parser')
     for tag, attr, resp_attr, ext in (
             ('img', 'src', 'content', 'jpg'),
