@@ -1,9 +1,14 @@
+import time
 from pathlib import Path
 from typing import List
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
+from progress.bar import Bar, ChargingBar
+from progress.counter import Stack
+from progress.spinner import Spinner
 
+from page_loader.progress_bar import ProgressBar
 from page_loader.utils import transform_url_to_file_name, get_response, \
     write_to_file
 
@@ -29,6 +34,7 @@ def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
     Returns changed html"""
 
     for src in sources:
+        bar = ChargingBar(max=1)
         src_url = src.get(attr)
         if not src_url and not (
                 src_url.startswith('/') or base_url in src_url):
@@ -38,6 +44,8 @@ def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
         if src_url.startswith('/'):
             src_url = urljoin(base_url, src_url)
 
+        bar.message = src_url + ' '
+        bar.start()
         path_to_src = transform_url_to_file_name(src_url, extension)
         path_to_src = full_path_to_files.joinpath(path_to_src)
         html = html.replace(base_src_url, '/'.join(path_to_src.parts[1:]))
@@ -46,5 +54,7 @@ def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
         file_txt = src_response.__getattribute__(response_attr)
 
         write_to_file(path_to_src, file_txt)
-        print(f'OK {src_url}')
+        bar.next()
+        bar.finish()
+
     return html
