@@ -3,7 +3,6 @@ import os
 import sys
 from pathlib import Path
 from typing import Union, Optional
-from urllib.parse import urlparse
 
 from page_loader.html import replace_links_to_paths
 from page_loader.logger import logger_
