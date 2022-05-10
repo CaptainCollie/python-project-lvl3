@@ -60,9 +60,3 @@ def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
         bar.finish()
 
     return html
-
-
-def to_bytes(text):
-    if isinstance(text, str):
-        text = text.encode('utf-8-sig')
-    return text
