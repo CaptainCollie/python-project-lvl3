@@ -66,4 +66,6 @@ def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
 def to_str(data):
     if isinstance(data, bytes):
         data = data.decode('utf-8', 'ignore')
+
+    data.replace('\xef\xbb\xbf', '')
     return data
