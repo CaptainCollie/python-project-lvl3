@@ -18,7 +18,8 @@ def text():
 @pytest.fixture
 def image():
     with open(
-            'tests/fixtures/page-loader-hexlet-repl-co-assets-professions-nodejs.png',
+            'tests/fixtures/'
+            'page-loader-hexlet-repl-co-assets-professions-nodejs.png',
             'rb') as f:
         return f.read()
 
