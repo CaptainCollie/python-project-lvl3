@@ -43,7 +43,7 @@ def download(url: str, path: Union[str, Path]) -> Optional[str]:
 def main():
     args = parse_args(sys.argv[1:])
     file_path = download(args.url, args.output)
-    print(file_path)
+    print(f"Page was successfully downloaded into '{file_path}'")
 
 
 if __name__ == "__main__":

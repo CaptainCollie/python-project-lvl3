@@ -13,3 +13,6 @@ Work Example
 
 Download resources
 [![asciicast](https://asciinema.org/a/fNdJqeq4S1Toeh09JpIqSe64n.svg)](https://asciinema.org/a/fNdJqeq4S1Toeh09JpIqSe64n)
+
+With exception
+[![asciicast](https://asciinema.org/a/VxuJS6pMVFQuqxJEHRTxPgbtQ.svg)](https://asciinema.org/a/VxuJS6pMVFQuqxJEHRTxPgbtQ)

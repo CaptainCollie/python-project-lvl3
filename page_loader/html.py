@@ -46,4 +46,5 @@ def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
         file_txt = src_response.__getattribute__(response_attr)
 
         write_to_file(path_to_src, file_txt)
+        print(f'OK {src_url}')
     return html
