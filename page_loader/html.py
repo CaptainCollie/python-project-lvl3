@@ -5,8 +5,8 @@ from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 from progress.bar import ChargingBar
 
-from page_loader.utils import transform_url_to_file_name, get_response, \
-    write_to_file
+from page_loader.file import write_to_file
+from page_loader.utils import transform_url_to_file_name, get_response
 
 
 def replace_links_to_paths(html: str, path_to_files: Path,

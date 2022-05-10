@@ -4,11 +4,12 @@ import sys
 from pathlib import Path
 from typing import Union, Optional
 
+from page_loader.file import write_to_file
 from page_loader.html import replace_links_to_paths
 from page_loader.logger import logger_
 from page_loader.parse_args import parse_args
 from page_loader.utils import transform_url_to_file_name, create_dir, \
-    get_response, write_to_file
+    get_response
 
 __all__ = ['download']
 
