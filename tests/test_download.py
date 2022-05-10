@@ -97,6 +97,7 @@ def test_download_permission_error(tmpdir):
             download(url, path)
         os.chmod(path, 777)
 
+
 def test_download_page_with_sources(tmpdir, text, image, css, html_text,
                                     js):
     with requests_mock.Mocker() as m:
