@@ -1,4 +1,5 @@
 #! usr/env/python
+import os
 import sys
 from pathlib import Path
 from typing import Union, Optional
@@ -19,6 +20,10 @@ def download(url: str, path: Union[str, Path]) -> Optional[str]:
     if not path_to_dir.exists():
         logger_.error(f'Path {path} does not exist')
         raise FileExistsError(f'Path {path} does not exist')
+
+    if not os.access(path_to_dir, os.W_OK):
+        logger_.error(f'Permissions denied to path {path}')
+        raise PermissionError(f'Permissions denied to path {path}')
 
     response = get_response(url)
 

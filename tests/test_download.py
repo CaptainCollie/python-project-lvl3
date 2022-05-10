@@ -86,6 +86,18 @@ def test_download_connection_error(tmpdir):
             download(url, path)
 
 
+def test_download_permission_error(tmpdir):
+    with requests_mock.Mocker() as m:
+        path = cwd.joinpath(tmpdir)
+        os.chmod(path, 555)
+        with pytest.raises(PermissionError,
+                           match=f'Permissions denied to path {path}'):
+            url = 'http://test.com'
+            m.get(url=url, text='Hello, World!')
+            download(url, path)
+
+
+
 def test_download_page_with_sources(tmpdir, text, image, css, html_text,
                                     js):
     with requests_mock.Mocker() as m:
