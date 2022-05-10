@@ -2,11 +2,10 @@ from pathlib import Path
 from typing import List
 from urllib.parse import urljoin
 
-import requests
 from bs4 import BeautifulSoup
 
-from page_loader.logger import logger_
-from page_loader.utils import transform_url_to_file_name
+from page_loader.utils import transform_url_to_file_name, get_response, \
+    write_to_file
 
 
 def replace_links_to_paths(html: str, path_to_files: Path,
@@ -43,17 +42,8 @@ def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
         path_to_src = full_path_to_files.joinpath(path_to_src)
         html = html.replace(base_src_url, '/'.join(path_to_src.parts[1:]))
 
-        logger_.info(f'Request to {src_url}')
-        src_response = requests.get(src_url)
-        logger_.info(f'Response status {src_response.status_code}')
-        mode = ''
+        src_response = get_response(src_url)
         file_txt = src_response.__getattribute__(response_attr)
-        if isinstance(file_txt, bytes):
-            mode = 'wb'
-        elif isinstance(file_txt, str):
-            mode = 'w'
-        logger_.info(f'Writing in file {path_to_src}')
-        with open(path_to_src, mode) as f:
-            f.write(file_txt)
-        print('OK', src_url)
+
+        write_to_file(path_to_src, file_txt)
     return html

@@ -1,6 +1,10 @@
 import os
 import re
+from pathlib import Path
+from typing import Union
 from urllib.parse import urlparse
+
+import requests
 
 from page_loader.logger import logger_
 
@@ -36,3 +40,32 @@ def create_dir(dir_path):
         os.mkdir(dir_path)
     except FileExistsError:
         logger_.warning(f'Directory exists: {dir_path}')
+
+
+def get_response(url):
+    logger_.info(f'Request to {url}')
+    response = requests.get(url)
+    logger_.info(f'Response status {response.status_code}')
+    if not response.status_code == 200:
+        logger_.error(f'Connection to {url} failed\n'
+                      f'{response.status_code}')
+        raise ConnectionError(f'Connection to {url} failed\n'
+                              f'{response.reason}\n'
+                              f'{response.status_code}'
+                              )
+    return response
+
+
+def choose_mode(file_txt: Union[str, bytes]) -> str:
+    if isinstance(file_txt, bytes):
+        return 'wb'
+    elif isinstance(file_txt, str):
+        return 'w'
+    return ''
+
+
+def write_to_file(path: Union[Path, str], data: Union[str, bytes]) -> None:
+    mode = choose_mode(data)
+    logger_.info(f'Writing in file {path}')
+    with open(path, mode) as f:
+        f.write(data)
