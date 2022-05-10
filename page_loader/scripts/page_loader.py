@@ -35,7 +35,7 @@ def download(url: str, path: Union[str, Path]) -> Optional[str]:
 
     create_dir(path_to_files)
 
-    html = response.text
+    html = response.content.decode('utf-8', 'ignore')
 
     html = replace_links_to_paths(html, path_to_files, url)
 

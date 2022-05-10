@@ -22,8 +22,7 @@ def replace_links_to_paths(html: str, path_to_files: Path,
         if sources:
             html = download_sources(sources, path_to_files, base_url, url,
                                     html, attr, resp_attr, ext)
-    return BeautifulSoup(html.encode("latin1", 'ignore').decode('utf-8'),
-                         'html.parser').prettify()
+    return BeautifulSoup(html, 'html.parser').prettify()
 
 
 def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
