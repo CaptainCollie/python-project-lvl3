@@ -13,7 +13,6 @@ def replace_links_to_paths(html: str, path_to_files: Path,
                            url: str) -> str:
     parsed_url = urlparse(url)
     base_url = f'{parsed_url.scheme}://{parsed_url.netloc}'
-    html = html.replace('\xef\xbb\xbf', '')
     soup = BeautifulSoup(html, 'html.parser')
     for tag, attr, resp_attr, ext in (
             ('img', 'src', 'content', 'jpg'),
@@ -23,7 +22,8 @@ def replace_links_to_paths(html: str, path_to_files: Path,
         if sources:
             html = download_sources(sources, path_to_files, base_url, url,
                                     html, attr, resp_attr, ext)
-    return BeautifulSoup(html, 'html.parser').prettify()
+    return BeautifulSoup(html, 'html.parser').prettify().replace(
+        '\xef\xbb\xbf', '')
 
 
 def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
