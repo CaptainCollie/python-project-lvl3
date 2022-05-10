@@ -39,6 +39,7 @@ def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
             continue
 
         base_src_url = src_url
+
         if not parsed_src_url.netloc and parsed_src_url.path.startswith('/'):
             src_url = urljoin(base_url, src_url)
         elif not parsed_src_url.netloc and not parsed_src_url.path.startswith(
@@ -49,7 +50,7 @@ def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
         bar.start()
         path_to_src = transform_url_to_file_name(src_url, extension)
         path_to_src = full_path_to_files.joinpath(path_to_src)
-        html = html.replace(base_src_url, '/'.join(path_to_src.parts[1:]))
+        html = html.replace(base_src_url, '/'.join(path_to_src.parts[4:]))
 
         src_response = get_response(src_url)
         file_txt = src_response.__getattribute__(response_attr)
