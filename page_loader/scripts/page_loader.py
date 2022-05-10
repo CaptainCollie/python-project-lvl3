@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 from typing import Union, Optional
 
-from page_loader.file import write_to_file
+from page_loader.file import write
 from page_loader.html import replace_links_to_paths
 from page_loader.logger import logger_
 from page_loader.parse_args import parse_args
@@ -39,7 +39,7 @@ def download(url: str, path: Union[str, Path]) -> Optional[str]:
 
     html = replace_links_to_paths(html, path_to_files, url)
 
-    write_to_file(path_to_html, html)
+    write(path_to_html, html)
     return str(path_to_html.absolute())
 
 

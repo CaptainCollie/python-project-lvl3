@@ -1,7 +1,5 @@
 import os
 import re
-from pathlib import Path
-from typing import Union
 from urllib.parse import urlparse
 
 import requests
@@ -54,4 +52,3 @@ def get_response(url):
                               f'{response.status_code}'
                               )
     return response
-

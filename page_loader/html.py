@@ -5,7 +5,7 @@ from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 from progress.bar import ChargingBar
 
-from page_loader.file import write_to_file
+from page_loader.file import write
 from page_loader.utils import transform_url_to_file_name, get_response
 
 
@@ -55,7 +55,7 @@ def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
         src_response = get_response(src_url)
         file_txt = src_response.__getattribute__(response_attr)
 
-        write_to_file(path_to_src, file_txt)
+        write(path_to_src, file_txt)
         bar.next()
         bar.finish()
 
