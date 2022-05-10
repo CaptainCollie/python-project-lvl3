@@ -53,7 +53,7 @@ def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
         html = html.replace(base_src_url, '/'.join(path_to_src.parts[3:]))
 
         src_response = get_response(src_url)
-        file_txt = src_response.__getattribute__(response_attr))
+        file_txt = src_response.__getattribute__(response_attr)
 
         write(path_to_src, file_txt)
         bar.next()
