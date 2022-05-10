@@ -16,7 +16,7 @@ def replace_links_to_paths(html: str, path_to_files: Path,
     soup = BeautifulSoup(html, 'html.parser')
     for tag, attr, resp_attr, ext in (
             ('img', 'src', 'content', 'jpg'),
-            ('link', 'href', 'text', ''),
+            ('link', 'href', 'content', ''),
             ('script', 'src', 'text', '')):
         sources = soup.find_all(tag)
         if sources:
@@ -53,17 +53,10 @@ def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
         html = html.replace(base_src_url, '/'.join(path_to_src.parts[3:]))
 
         src_response = get_response(src_url)
-        file_txt = src_response.__getattribute__(response_attr)
-        file_txt = to_bytes(file_txt)
+        file_txt = src_response.__getattribute__(response_attr))
 
         write(path_to_src, file_txt)
         bar.next()
         bar.finish()
 
     return html
-
-
-def to_bytes(text):
-    if isinstance(text, str):
-        text = text.encode('utf-8-sig', 'ignore')
-    return text
