@@ -15,7 +15,7 @@ def replace_links_to_paths(html: str, path_to_files: Path,
     base_url = f'{parsed_url.scheme}://{parsed_url.netloc}'
     soup = BeautifulSoup(html, 'html.parser')
     for tag, attr, resp_attr, ext in (
-            ('img', 'src', 'content', 'png'),
+            ('img', 'src', 'content', 'jpg'),
             ('link', 'href', 'text', ''),
             ('script', 'src', 'text', '')):
         sources = soup.find_all(tag)
