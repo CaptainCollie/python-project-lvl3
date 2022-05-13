@@ -9,8 +9,8 @@ from page_loader.file import write
 from page_loader.utils import transform_url_to_file_name, get_response
 
 
-def replace_links_to_paths(html: str, path_to_files: Path,
-                           url: str) -> str:
+def download_sources(html: str, path_to_files: Path,
+                     url: str) -> str:
     parsed_url = urlparse(url)
     base_url = f'{parsed_url.scheme}://{parsed_url.netloc}'
     soup = BeautifulSoup(html, 'html.parser')
@@ -20,14 +20,25 @@ def replace_links_to_paths(html: str, path_to_files: Path,
             ('script', 'src', 'text', '')):
         sources = soup.find_all(tag)
         if sources:
-            html = download_sources(sources, path_to_files, base_url, url,
-                                    html, attr, resp_attr, ext)
+            html = download_and_replace_link_in_html(sources,
+                                                     path_to_files,
+                                                     base_url,
+                                                     url,
+                                                     html,
+                                                     attr,
+                                                     resp_attr,
+                                                     ext)
     return BeautifulSoup(html, 'html.parser').prettify()
 
 
-def download_sources(sources: List[BeautifulSoup], full_path_to_files: Path,
-                     base_url: str, curr_url: str, html: str, attr: str,
-                     response_attr: str, extension: str = '', ) -> str:
+def download_and_replace_link_in_html(sources: List[BeautifulSoup],
+                                      full_path_to_files: Path,
+                                      base_url: str,
+                                      curr_url: str,
+                                      html: str,
+                                      attr: str,
+                                      response_attr: str,
+                                      extension: str = '', ) -> str:
     """Downloads source and put them into full_path_to_files
     Returns changed html"""
 
