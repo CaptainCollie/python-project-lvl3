@@ -4,12 +4,13 @@ import sys
 from pathlib import Path
 from typing import Union, Optional
 
+from page_loader.directory import create
 from page_loader.file import write
 from page_loader.html import download_sources
 from page_loader.logger import logger_
 from page_loader.parse_args import parse_args
-from page_loader.utils import transform_url_to_file_name, create_dir, \
-    get_response
+from page_loader.request import make_request
+from page_loader.utils import transform_url_to_path
 
 __all__ = ['download']
 
@@ -25,15 +26,15 @@ def download(url: str, path: Union[str, Path]) -> Optional[str]:
         logger_.error(f'Permissions denied to path {path}')
         raise PermissionError(f'Permissions denied to path {path}')
 
-    response = get_response(url)
+    response = make_request(url)
 
-    html_file_name = transform_url_to_file_name(url, 'html')
+    html_file_name = transform_url_to_path(url, 'html')
     path_to_html = path_to_dir.joinpath(html_file_name)
 
-    files_dir_name = transform_url_to_file_name(url, '_files', True)
+    files_dir_name = transform_url_to_path(url, '_files', True)
     path_to_files = path_to_dir.joinpath(files_dir_name)
 
-    create_dir(path_to_files)
+    create(path_to_files)
 
     html = response.text
 

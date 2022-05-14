@@ -6,7 +6,8 @@ from bs4 import BeautifulSoup
 from progress.bar import ChargingBar
 
 from page_loader.file import write
-from page_loader.utils import transform_url_to_file_name, get_response
+from page_loader.request import make_request
+from page_loader.utils import transform_url_to_path
 
 
 def download_sources(html: str, path_to_files: Path,
@@ -59,11 +60,11 @@ def download_and_replace_link_in_html(sources: List[BeautifulSoup],
 
         bar.message = src_url + ' '
         bar.start()
-        path_to_src = transform_url_to_file_name(src_url, extension)
+        path_to_src = transform_url_to_path(src_url, extension)
         path_to_src = full_path_to_files.joinpath(path_to_src)
         html = html.replace(base_src_url, '/'.join(path_to_src.parts[3:]))
 
-        src_response = get_response(src_url)
+        src_response = make_request(src_url)
         file_txt = src_response.__getattribute__(response_attr)
 
         write(path_to_src, file_txt)
