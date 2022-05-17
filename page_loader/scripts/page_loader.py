@@ -1,10 +1,8 @@
 #! usr/env/python
 import os
-import sys
 from pathlib import Path
 from typing import Union, Optional
 
-from page_loader.directory import create
 from page_loader.file import write
 from page_loader.html import download_sources
 from page_loader.logger import logger_
@@ -34,7 +32,10 @@ def download(url: str, path: Union[str, Path]) -> Optional[str]:
     files_dir_name = transform_url_to_path(url, '_files', True)
     path_to_files = path_to_dir.joinpath(files_dir_name)
 
-    create(path_to_files)
+    if os.path.exists(path_to_files):
+        logger_.warning(f'Directory exists: {path_to_files}')
+    else:
+        os.mkdir(path_to_files)
 
     html = response.text
 
@@ -45,7 +46,7 @@ def download(url: str, path: Union[str, Path]) -> Optional[str]:
 
 
 def main():
-    args = parse_args(sys.argv[1:])
+    args = parse_args()
     file_path = download(args.url, args.output)
     print(f"Page was successfully downloaded into '{file_path}'")
 

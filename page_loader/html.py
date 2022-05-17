@@ -21,27 +21,28 @@ def download_sources(html: str, path_to_files: Path,
             ('script', 'src', 'text', '')):
         sources = soup.find_all(tag)
         if sources:
-            html = download_and_replace_link_in_html(sources,
-                                                     path_to_files,
-                                                     base_url,
-                                                     url,
-                                                     html,
-                                                     attr,
-                                                     resp_attr,
-                                                     ext)
+            html, sources_to_download = replace_link_in_html(sources,
+                                                             path_to_files,
+                                                             base_url,
+                                                             url,
+                                                             html,
+                                                             attr,
+                                                             ext)
+            for s in sources_to_download:
+                download_source(*s, resp_attr)
     return BeautifulSoup(html, 'html.parser').prettify()
 
 
-def download_and_replace_link_in_html(sources: List[BeautifulSoup],
-                                      full_path_to_files: Path,
-                                      base_url: str,
-                                      curr_url: str,
-                                      html: str,
-                                      attr: str,
-                                      response_attr: str,
-                                      extension: str = '', ) -> str:
+def replace_link_in_html(sources: List[BeautifulSoup],
+                         full_path_to_files: Path,
+                         base_url: str,
+                         curr_url: str,
+                         html: str,
+                         attr: str,
+                         extension: str = '', ):
     """Downloads source and put them into full_path_to_files
     Returns changed html"""
+    sources_to_download = []
 
     for src in sources:
         bar = ChargingBar(max=1)
@@ -60,15 +61,21 @@ def download_and_replace_link_in_html(sources: List[BeautifulSoup],
 
         bar.message = src_url + ' '
         bar.start()
+
         path_to_src = transform_url_to_path(src_url, extension)
         path_to_src = full_path_to_files.joinpath(path_to_src)
         html = html.replace(base_src_url, '/'.join(path_to_src.parts[3:]))
 
-        src_response = make_request(src_url)
-        file_txt = src_response.__getattribute__(response_attr)
+        sources_to_download.append((src_url, path_to_src))
 
-        write(path_to_src, file_txt)
         bar.next()
         bar.finish()
 
-    return html
+    return html, sources_to_download
+
+
+def download_source(src_url: str, path_to_src: Path, response_attr: str, ):
+    src_response = make_request(src_url)
+    file_txt = src_response.__getattribute__(response_attr)
+
+    write(path_to_src, file_txt)

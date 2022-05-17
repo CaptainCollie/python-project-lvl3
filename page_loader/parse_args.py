@@ -3,7 +3,7 @@ import argparse
 from page_loader.logger import logger_
 
 
-def parse_args(args):
+def parse_args():
     parser = argparse.ArgumentParser(
         add_help=False,
         usage="Usage page-loader [options] <url>",
@@ -15,9 +15,7 @@ def parse_args(args):
     parser.add_argument('-o', '--output', dest='output', type=str,
                         metavar='output', help='output dir (default: "/app")',
                         default='/app')
-    parser.add_argument('-h', '--help', help='display help for command',
-                        action='help')
     parser._optionals.title = 'Options'
-    args = parser.parse_args(args)
+    args = parser.parse_args()
     logger_.info(f'Args: {args}')
     return args
