@@ -26,7 +26,7 @@ def update_html(html: str, path_to_files: Path, url: str) -> str:
             bar.start()
 
             download_source(url, path, resp_attr)
-            html = html.replace(url_to_replace, ''.join(path.parts[3:]))
+            html = html.replace(url_to_replace, '/'.join(path.parts[3:]))
 
             bar.next()
             bar.finish()
