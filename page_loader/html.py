@@ -7,45 +7,57 @@ from progress.bar import ChargingBar
 
 from page_loader.file import write
 from page_loader.request import make_request
-from page_loader.utils import transform_url_to_path
+from page_loader.url import transform_url_to_path
 
 
-def download_sources(html: str, path_to_files: Path,
-                     url: str) -> str:
-    parsed_url = urlparse(url)
-    base_url = f'{parsed_url.scheme}://{parsed_url.netloc}'
-    soup = BeautifulSoup(html, 'html.parser')
-    for tag, attr, resp_attr, ext in (
-            ('img', 'src', 'content', 'jpg'),
-            ('link', 'href', 'content', ''),
-            ('script', 'src', 'text', '')):
-        sources = soup.find_all(tag)
-        if sources:
-            html, sources_to_download = replace_link_in_html(sources,
-                                                             path_to_files,
-                                                             base_url,
-                                                             url,
-                                                             html,
-                                                             attr,
-                                                             ext)
-            for s in sources_to_download:
-                download_source(*s, resp_attr)
+#  Не получилось разбить эту функцию
+def update_html(html: str, path_to_files: Path, url: str) -> str:
+    data_for_downloading = parse_html(html)
+    for sources, attr, ext, resp_attr in data_for_downloading:
+        sources_to_download = get_sources_to_download(sources,
+                                                      attr,
+                                                      ext,
+                                                      path_to_files,
+                                                      url)
+
+        for url, path, url_to_replace in sources_to_download:
+            bar = ChargingBar(max=1)
+            bar.message = url + ' '
+            bar.start()
+
+            download_source(url, path, resp_attr)
+            html = html.replace(url_to_replace, ''.join(path.parts[3:]))
+
+            bar.next()
+            bar.finish()
     return BeautifulSoup(html, 'html.parser').prettify()
 
 
-def replace_link_in_html(sources: List[BeautifulSoup],
-                         full_path_to_files: Path,
-                         base_url: str,
-                         curr_url: str,
-                         html: str,
-                         attr: str,
-                         extension: str = '', ):
+def parse_html(html: str) -> list:
+    soup = BeautifulSoup(html, 'html.parser')
+    data_for_downloading = (('img', 'src', 'content', 'jpg'),
+                            ('link', 'href', 'content', ''),
+                            ('script', 'src', 'text', ''))
+
+    result = []
+    for tag, attr, resp_attr, ext in data_for_downloading:
+        sources = soup.find_all(tag)
+        result.append((sources, attr, ext, resp_attr))
+    return result
+
+
+def get_sources_to_download(sources: List[BeautifulSoup],
+                            attr: str,
+                            extension: str,
+                            full_path_to_files: Path,
+                            url: str, ):
     """Downloads source and put them into full_path_to_files
     Returns changed html"""
+    parsed_url = urlparse(url)
+    base_url = f'{parsed_url.scheme}://{parsed_url.netloc}'
     sources_to_download = []
 
     for src in sources:
-        bar = ChargingBar(max=1)
         src_url = src.get(attr)
         parsed_src_url = urlparse(src_url)
         if parsed_src_url.scheme and base_url not in src_url:
@@ -57,21 +69,14 @@ def replace_link_in_html(sources: List[BeautifulSoup],
             src_url = urljoin(base_url, src_url)
         elif not parsed_src_url.netloc and not parsed_src_url.path.startswith(
                 '/'):
-            src_url = urljoin(curr_url, src_url)
-
-        bar.message = src_url + ' '
-        bar.start()
+            src_url = urljoin(url, src_url)
 
         path_to_src = transform_url_to_path(src_url, extension)
         path_to_src = full_path_to_files.joinpath(path_to_src)
-        html = html.replace(base_src_url, '/'.join(path_to_src.parts[3:]))
 
-        sources_to_download.append((src_url, path_to_src))
+        sources_to_download.append((src_url, path_to_src, base_src_url))
 
-        bar.next()
-        bar.finish()
-
-    return html, sources_to_download
+    return sources_to_download
 
 
 def download_source(src_url: str, path_to_src: Path, response_attr: str, ):

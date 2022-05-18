@@ -5,6 +5,7 @@ import pytest
 import requests_mock
 
 from page_loader.scripts.page_loader import download
+from requests.exceptions import HTTPError
 
 cwd = Path(__file__).parent
 
@@ -80,8 +81,8 @@ def test_download_connection_error(tmpdir):
     with requests_mock.Mocker() as m:
         url = 'http://test.com'
         m.get(url=url, text='Hello, World!', status_code=404)
-        with pytest.raises(ConnectionError,
-                           match=f'Connection to {url} failed'):
+        with pytest.raises(HTTPError,
+                           match=f'404 Client Error: None for url: {url}'):
             path = cwd.joinpath(tmpdir)
             download(url, path)
 
