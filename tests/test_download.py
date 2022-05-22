@@ -3,9 +3,9 @@ from pathlib import Path
 
 import pytest
 import requests_mock
+from requests.exceptions import HTTPError
 
 from page_loader.scripts.page_loader import download
-from requests.exceptions import HTTPError
 
 cwd = Path(__file__).parent
 

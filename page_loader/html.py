@@ -1,18 +1,20 @@
+import os
 from pathlib import Path
-from typing import List
+from typing import List, Optional, Union, Tuple
 from urllib.parse import urljoin, urlparse
 
+import requests
 from bs4 import BeautifulSoup
 from progress.bar import ChargingBar
 
 from page_loader.file import write
-from page_loader.request import make_request
-from page_loader.url import transform_url_to_path
+from page_loader.logger import logger_
+from page_loader.url import transform_url_to_file_name
 
 
-#  Не получилось разбить эту функцию
-def update_html(html: str, path_to_files: Path, url: str) -> str:
+def update_html(html: str, path_to_files: Path, url: str) -> Tuple[str, list]:
     data_for_downloading = parse_html(html)
+    download_triplets = []
     for sources, attr, ext, resp_attr in data_for_downloading:
         sources_to_download = get_sources_to_download(sources,
                                                       attr,
@@ -21,21 +23,15 @@ def update_html(html: str, path_to_files: Path, url: str) -> str:
                                                       url)
 
         for url, path, url_to_replace in sources_to_download:
-            bar = ChargingBar(max=1)
-            bar.message = url + ' '
-            bar.start()
-
-            download_source(url, path, resp_attr)
+            download_triplets.append((url, path, resp_attr))
             html = html.replace(url_to_replace, '/'.join(path.parts[3:]))
 
-            bar.next()
-            bar.finish()
-    return BeautifulSoup(html, 'html.parser').prettify()
+    return BeautifulSoup(html, 'html.parser').prettify(), download_triplets
 
 
 def parse_html(html: str) -> list:
     soup = BeautifulSoup(html, 'html.parser')
-    data_for_downloading = (('img', 'src', 'content', 'jpg'),
+    data_for_downloading = (('img', 'src', 'content', '.jpg'),
                             ('link', 'href', 'content', ''),
                             ('script', 'src', 'text', ''))
 
@@ -71,7 +67,7 @@ def get_sources_to_download(sources: List[BeautifulSoup],
                 '/'):
             src_url = urljoin(url, src_url)
 
-        path_to_src = transform_url_to_path(src_url, extension)
+        path_to_src = transform_url_to_file_name(src_url, extension)
         path_to_src = full_path_to_files.joinpath(path_to_src)
 
         sources_to_download.append((src_url, path_to_src, base_src_url))
@@ -79,8 +75,55 @@ def get_sources_to_download(sources: List[BeautifulSoup],
     return sources_to_download
 
 
-def download_source(src_url: str, path_to_src: Path, response_attr: str, ):
-    src_response = make_request(src_url)
-    file_txt = src_response.__getattribute__(response_attr)
+def download_sources(download_triplets: List[Tuple[str, str, str]]):
+    for src_url, path_to_src, response_attr in download_triplets:
+        bar = ChargingBar(max=1)
+        bar.message = src_url + ' '
+        bar.start()
 
-    write(path_to_src, file_txt)
+        src_response = make_request(src_url)
+        file_txt = src_response.__getattribute__(response_attr)
+
+        write(path_to_src, file_txt)
+        bar.next()
+        bar.finish()
+
+
+def download_(url: str, path: Union[str, Path]) -> Optional[str]:
+    """Download html page located on url and save it to path/url.html"""
+    path_to_dir = Path(path)
+    if not path_to_dir.exists():
+        logger_.error(f'Path {path} does not exist')
+        raise FileExistsError(f'Path {path} does not exist')
+
+    if not os.access(path_to_dir, os.W_OK):
+        logger_.error(f'Permissions denied to path {path}')
+        raise PermissionError(f'Permissions denied to path {path}')
+
+    response = make_request(url)
+
+    html_file_name = transform_url_to_file_name(url, '.html')
+    path_to_html = path_to_dir.joinpath(html_file_name)
+
+    files_dir_name = transform_url_to_file_name(url, is_dir=True)
+    path_to_files = path_to_dir.joinpath(files_dir_name)
+
+    if not os.path.exists(path_to_files):
+        os.mkdir(path_to_files)
+        logger_.warning(f'Directory created: {path_to_files}')
+
+    html = response.text
+
+    html, download_triplets = update_html(html, path_to_files, url)
+    download_sources(download_triplets)
+
+    write(path_to_html, html)
+    return str(path_to_html.absolute())
+
+
+def make_request(url):
+    logger_.info(f'Request to {url}')
+    response = requests.get(url)
+    logger_.info(f'Response status {response.status_code}')
+    response.raise_for_status()
+    return response

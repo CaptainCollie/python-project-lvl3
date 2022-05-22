@@ -2,27 +2,21 @@ import re
 from urllib.parse import urlparse
 
 
-def transform_url_to_path(url: str, extension: str = '',
-                          is_dir: bool = False) -> str:
+def transform_url_to_file_name(url: str, extension: str = '',
+                               is_dir: bool = False) -> str:
     """Transforms url to file name
     https://ru.hexlet.io/courses -> ru-hexlet-io-courses.html"""
     parsed_url = urlparse(url)
-    file_raw_extension = ''
-    if len(parsed_url.path.split('.')) == 2:
-        file_raw_extension = parsed_url.path.split('.')[-1]
-        parsed_url = parsed_url._replace(
-            path=''.join(parsed_url.path.split('.')[:-1]))
-
-    if not extension and not file_raw_extension:
-        extension = 'html'
+    file_raw_extension = re.search(r'\.\w+$', parsed_url.path)
+    if file_raw_extension:
+        file_raw_extension = file_raw_extension.group()
+        url = url.replace(file_raw_extension, '')
     elif not extension:
+        extension = '.html'
+    if not extension:
         extension = file_raw_extension
 
-    if not is_dir:
-        extension = '.' + extension
-
-    if parsed_url.path == '/':
-        parsed_url = parsed_url._replace(path='')
-    prepared_ulr = parsed_url.geturl().replace(f'{parsed_url.scheme}://', '')
-    file_name = re.sub(r'[^\w\d]', '-', prepared_ulr) + extension
+    prepared_ulr = url.replace(f'{parsed_url.scheme}://', '')
+    file_name = re.sub(r'[^\w\d]', '-',
+                       prepared_ulr) + ('_files' if is_dir else extension)
     return file_name

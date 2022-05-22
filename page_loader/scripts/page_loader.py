@@ -2,7 +2,7 @@
 from pathlib import Path
 from typing import Union, Optional
 
-from page_loader.loader import download_
+from page_loader.html import download_
 from page_loader.parse_args import parse_args
 
 __all__ = ['download']
