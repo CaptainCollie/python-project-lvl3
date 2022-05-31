@@ -19,7 +19,7 @@ downloading_triplets = (('img', 'src', '.jpg'),
 def update_html(html: str, path_to_files: Path, url: str) -> Tuple[str, list]:
     data_for_downloading = parse_html(html)
     download_pairs = []
-    for sources, attr, ext, resp_attr in data_for_downloading:
+    for sources, attr, ext in data_for_downloading:
         sources_to_download = get_sources_to_download(sources,
                                                       attr,
                                                       ext,
