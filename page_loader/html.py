@@ -11,10 +11,14 @@ from page_loader.file import write
 from page_loader.logger import logger_
 from page_loader.url import transform_url_to_file_name
 
+downloading_triplets = (('img', 'src', '.jpg'),
+                        ('link', 'href', ''),
+                        ('script', 'src', ''))
+
 
 def update_html(html: str, path_to_files: Path, url: str) -> Tuple[str, list]:
     data_for_downloading = parse_html(html)
-    download_triplets = []
+    download_pairs = []
     for sources, attr, ext, resp_attr in data_for_downloading:
         sources_to_download = get_sources_to_download(sources,
                                                       attr,
@@ -23,22 +27,19 @@ def update_html(html: str, path_to_files: Path, url: str) -> Tuple[str, list]:
                                                       url)
 
         for url, path, url_to_replace in sources_to_download:
-            download_triplets.append((url, path, resp_attr))
+            download_pairs.append((url, path))
             html = html.replace(url_to_replace, '/'.join(path.parts[3:]))
 
-    return BeautifulSoup(html, 'html.parser').prettify(), download_triplets
+    return BeautifulSoup(html, 'html.parser').prettify(), download_pairs
 
 
 def parse_html(html: str) -> list:
     soup = BeautifulSoup(html, 'html.parser')
-    data_for_downloading = (('img', 'src', 'content', '.jpg'),
-                            ('link', 'href', 'content', ''),
-                            ('script', 'src', 'text', ''))
 
     result = []
-    for tag, attr, resp_attr, ext in data_for_downloading:
+    for tag, attr, ext in downloading_triplets:
         sources = soup.find_all(tag)
-        result.append((sources, attr, ext, resp_attr))
+        result.append((sources, attr, ext))
     return result
 
 
@@ -75,21 +76,20 @@ def get_sources_to_download(sources: List[BeautifulSoup],
     return sources_to_download
 
 
-def download_sources(download_triplets: List[Tuple[str, str, str]]):
-    for src_url, path_to_src, response_attr in download_triplets:
+def download_sources(download_pairs: List[Tuple[str, str]]):
+    for src_url, path_to_src in download_pairs:
         bar = ChargingBar(max=1)
         bar.message = src_url + ' '
         bar.start()
 
         src_response = make_request(src_url)
-        file_txt = src_response.__getattribute__(response_attr)
-
+        file_txt = src_response.content
         write(path_to_src, file_txt)
         bar.next()
         bar.finish()
 
 
-def download_(url: str, path: Union[str, Path]) -> Optional[str]:
+def download(url: str, path: Union[str, Path]) -> Optional[str]:
     """Download html page located on url and save it to path/url.html"""
     path_to_dir = Path(path)
     if not path_to_dir.exists():

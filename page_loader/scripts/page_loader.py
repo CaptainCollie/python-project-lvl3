@@ -1,16 +1,7 @@
 #! usr/env/python
-from pathlib import Path
-from typing import Union, Optional
 
-from page_loader.html import download_
+from page_loader.html import download
 from page_loader.parse_args import parse_args
-
-__all__ = ['download']
-
-
-def download(url: str, path: Union[str, Path]) -> Optional[str]:
-    """Download html page located on url and save it to path/url.html"""
-    return download_(url, path)
 
 
 def main():
