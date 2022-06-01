@@ -12,6 +12,7 @@ def main():
         print(f"Page was successfully downloaded into '{file_path}'")
     except (FileExistsError, PermissionError) as e:
         logger_.error(str(e))
+        raise e
 
 
 if __name__ == "__main__":
