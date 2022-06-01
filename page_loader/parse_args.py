@@ -1,6 +1,6 @@
 import argparse
 
-from page_loader.logger import logger_
+from page_loader.scripts import logger_
 
 
 def parse_args():

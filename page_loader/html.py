@@ -8,23 +8,24 @@ from bs4 import BeautifulSoup
 from progress.bar import ChargingBar
 
 from page_loader.file import write
-from page_loader.logger import logger_
-from page_loader.url import transform_url_to_file_name
+from page_loader.scripts import logger_
+from page_loader.url import transform_to_path
 
-downloading_triplets = (('img', 'src', '.jpg'),
-                        ('link', 'href', ''),
-                        ('script', 'src', ''))
+downloading_triplets = (('img', 'src'),
+                        ('link', 'href'),
+                        ('script', 'src'))
 
 
-def update_html(html: str, path_to_files: Path, url: str) -> Tuple[str, list]:
+def gather_data_for_downloading_and_prepare_html(html: str,
+                                                 path_to_files: Path,
+                                                 url: str) -> Tuple[str, list]:
     data_for_downloading = parse_html(html)
     download_pairs = []
-    for sources, attr, ext in data_for_downloading:
-        sources_to_download = get_sources_to_download(sources,
-                                                      attr,
-                                                      ext,
-                                                      path_to_files,
-                                                      url)
+    for sources, attr in data_for_downloading:
+        sources_to_download = collect_assets(sources,
+                                             attr,
+                                             path_to_files,
+                                             url)
 
         for url, path, url_to_replace in sources_to_download:
             download_pairs.append((url, path))
@@ -37,17 +38,20 @@ def parse_html(html: str) -> list:
     soup = BeautifulSoup(html, 'html.parser')
 
     result = []
-    for tag, attr, ext in downloading_triplets:
+    for tag, attr in downloading_triplets:
         sources = soup.find_all(tag)
-        result.append((sources, attr, ext))
+        if tag == 'img':
+            sources = [src for src in sources if
+                       '.png' in src.get(attr) or '.jpg' in src.get(attr)]
+        result.append((sources, attr))
     return result
 
 
-def get_sources_to_download(sources: List[BeautifulSoup],
-                            attr: str,
-                            extension: str,
-                            full_path_to_files: Path,
-                            url: str, ):
+def collect_assets(sources: List[BeautifulSoup],
+                   attr: str,
+                   full_path_to_files: Path,
+                   url: str,
+                   extension: str = ''):
     """Downloads source and put them into full_path_to_files
     Returns changed html"""
     parsed_url = urlparse(url)
@@ -68,7 +72,7 @@ def get_sources_to_download(sources: List[BeautifulSoup],
                 '/'):
             src_url = urljoin(url, src_url)
 
-        path_to_src = transform_url_to_file_name(src_url, extension)
+        path_to_src = transform_to_path(src_url, extension)
         path_to_src = full_path_to_files.joinpath(path_to_src)
 
         sources_to_download.append((src_url, path_to_src, base_src_url))
@@ -93,19 +97,17 @@ def download(url: str, path: Union[str, Path]) -> Optional[str]:
     """Download html page located on url and save it to path/url.html"""
     path_to_dir = Path(path)
     if not path_to_dir.exists():
-        logger_.error(f'Path {path} does not exist')
         raise FileExistsError(f'Path {path} does not exist')
 
     if not os.access(path_to_dir, os.W_OK):
-        logger_.error(f'Permissions denied to path {path}')
         raise PermissionError(f'Permissions denied to path {path}')
 
     response = make_request(url)
 
-    html_file_name = transform_url_to_file_name(url, '.html')
+    html_file_name = transform_to_path(url, '.html')
     path_to_html = path_to_dir.joinpath(html_file_name)
 
-    files_dir_name = transform_url_to_file_name(url, is_dir=True)
+    files_dir_name = transform_to_path(url, is_dir=True)
     path_to_files = path_to_dir.joinpath(files_dir_name)
 
     if not os.path.exists(path_to_files):
@@ -114,7 +116,8 @@ def download(url: str, path: Union[str, Path]) -> Optional[str]:
 
     html = response.text
 
-    html, download_triplets = update_html(html, path_to_files, url)
+    html, download_triplets = gather_data_for_downloading_and_prepare_html(
+        html, path_to_files, url)
     download_sources(download_triplets)
 
     write(path_to_html, html)

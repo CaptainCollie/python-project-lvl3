@@ -2,8 +2,8 @@ import re
 from urllib.parse import urlparse
 
 
-def transform_url_to_file_name(url: str, extension: str = '',
-                               is_dir: bool = False) -> str:
+def transform_to_path(url: str, extension: str = '',
+                      is_dir: bool = False) -> str:
     """Transforms url to file name
     https://ru.hexlet.io/courses -> ru-hexlet-io-courses.html"""
     parsed_url = urlparse(url)

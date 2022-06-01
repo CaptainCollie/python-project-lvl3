@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Union
 
-from page_loader.logger import logger_
+from page_loader.scripts import logger_
 
 
 def choose_mode(file_txt: Union[str, bytes]) -> str:
